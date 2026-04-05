@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pererakenduse retrospektiiv</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --border: #2a2d3e;
+      --accent: #6c63ff;
+      --accent2: #00c9a7;
+      --accent3: #f7c59f;
+      --text: #e2e8f0;
+      --muted: #8892a4;
+      --danger: #ff6b6b;
+      --success: #51cf66;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      padding: 3rem 0 2rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+    }
+
+    header .tag {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .qa-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .qa-block .question {
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .qa-block blockquote {
+      border-left: 3px solid var(--accent);
+      padding-left: 1rem;
+      color: var(--text);
+      font-style: italic;
+      font-size: 1.05rem;
+    }
+
+    section {
+      margin-bottom: 3rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-header .icon {
+      font-size: 1.5rem;
+    }
+
+    .section-header h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .section-header .subtitle {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-left: auto;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: var(--accent2);
+    }
+
+    .card ul {
+      padding-left: 1.25rem;
+    }
+
+    .card ul li {
+      margin-bottom: 0.4rem;
+      color: var(--text);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin: 1rem 0;
+    }
+
+    th {
+      background: rgba(108, 99, 255, 0.15);
+      color: var(--accent);
+      font-weight: 700;
+      text-align: left;
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(255,255,255,0.02);
+    }
+
+    td:first-child {
+      color: var(--accent3);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .highlight-box {
+      background: rgba(108, 99, 255, 0.1);
+      border: 1px solid rgba(108, 99, 255, 0.3);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      font-size: 0.95rem;
+    }
+
+    .highlight-box.success {
+      background: rgba(81, 207, 102, 0.08);
+      border-color: rgba(81, 207, 102, 0.3);
+      border-left-color: var(--success);
+    }
+
+    .highlight-box.warning {
+      background: rgba(247, 197, 159, 0.08);
+      border-color: rgba(247, 197, 159, 0.3);
+      border-left-color: var(--accent3);
+    }
+
+    .steps {
+      counter-reset: step;
+      list-style: none;
+      padding: 0;
+    }
+
+    .steps li {
+      counter-increment: step;
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      align-items: flex-start;
+    }
+
+    .steps li::before {
+      content: counter(step);
+      background: var(--accent);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.8rem;
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.2rem;
+    }
+
+    .ideal-doc {
+      background: #0d1f0d;
+      border: 1px solid #1a3a1a;
+      border-radius: 10px;
+      padding: 1.5rem;
+      font-family: monospace;
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: #a3d9a5;
+      margin: 1rem 0;
+      white-space: pre-wrap;
+    }
+
+    .gold-rule {
+      background: linear-gradient(135deg, rgba(247,197,159,0.1), rgba(108,99,255,0.1));
+      border: 1px solid rgba(247,197,159,0.3);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      margin-top: 3rem;
+    }
+
+    .gold-rule h2 {
+      font-size: 1.1rem;
+      color: var(--accent3);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .gold-rule .rule-text {
+      font-size: 1.15rem;
+      font-style: italic;
+      color: var(--text);
+      max-width: 600px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .gold-rule .example {
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+
+    .checklist li {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+      align-items: flex-start;
+    }
+
+    .checklist li::before {
+      content: '✓';
+      color: var(--success);
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .stat .value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .stat .label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 3rem 0 1rem;
+      color: var(--muted);
+      font-size: 0.82rem;
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+    }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.6rem; }
+      .card, .qa-block { padding: 1rem; }
+      table { font-size: 0.8rem; }
+      td, th { padding: 0.5rem 0.6rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="tag">Retrospektiiv</div>
+    <h1>Pererakenduse arendus:<br/>mida õppisime</h1>
+    <p>Juhi vaade · Aprill 2026</p>
+  </header>
+
+  <!-- Küsimus -->
+  <div class="qa-block">
+    <div class="question">Algne küsimus</div>
+    <blockquote>
+      Kas saaksid teha kogu sellest projektist kokkuvõtte tootejuhi, finantsjuhi ja ettevõtte juhi vaatest
+      ja anda nõu, kuidas oleks perfektselt kohe pidanud sellise projekti peale mõtlema? Küsin sellepärast,
+      et siis ma teaksin tulevikus, kuidas kohe paremini nõudeid kirja panna ning ei oleks liiga palju
+      üleliigseid faase ja projektikulu.
+    </blockquote>
+  </div>
+
+  <!-- Tootejuht -->
+  <section>
+    <div class="section-header">
+      <span class="icon">🎯</span>
+      <h2>Tootejuhi vaade</h2>
+      <span class="subtitle">Product Manager</span>
+    </div>
+
+    <div class="card">
+      <h3>Mis läks hästi</h3>
+      <ul>
+        <li>Kasutaja väärtus kasvas faasist faasi — iga lisandus lahendas reaalse vajaduse</li>
+        <li>Kiire iteratsioon: ideed said kohe rakenduse kujul testida</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>Mis läks valesti — nõuded tulid reaktiivselt, mitte proaktiivselt</h3>
+      <p style="margin-bottom: 1rem; color: var(--muted); font-size: 0.9rem;">
+        Igast faasist selgus uus vajadus, mida oleks saanud ette näha:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Faas</th>
+            <th>Probleem</th>
+            <th>Miks see pidi juhtuma</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>F1→F3</td>
+            <td>localStorage ei sünkrooni seadmete vahel</td>
+            <td>Kasutaja kasutas kohe mobiili — see oli ettenähtav</td>
+          </tr>
+          <tr>
+            <td>F1→F2</td>
+            <td>Ingliskeelsed ülesanded, fikseeritud nimekiri</td>
+            <td>Kasutaja on eestlane, ülesanded peavad olema muudetavad</td>
+          </tr>
+          <tr>
+            <td>F1→F5</td>
+            <td>Liikmed ja ülesanded olid hardcoded</td>
+            <td>Iga pere on erinev — dünaamilisus oli ilmselgelt vajalik</td>
+          </tr>
+          <tr>
+            <td>F4</td>
+            <td>Email domain probleem</td>
+            <td>Resend'i piiranguid oleks saanud ette uurida</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Kuidas oleks pidanud tegema</h3>
+      <p style="margin-bottom: 1rem; color: var(--muted); font-size: 0.9rem;">
+        Enne esimestki koodirida tuleb vastata 5 küsimusele:
+      </p>
+      <ol class="steps">
+        <li><strong>Kes kasutab?</strong> — mitu inimest, mitmes seadmes?</li>
+        <li><strong>Kus kasutab?</strong> — ainult kodus vs ka väljas, milline seade?</li>
+        <li><strong>Mis muutub aja jooksul?</strong> — ülesanded, liikmed — kas need on fikseeritud?</li>
+        <li><strong>Mis läheb teistele süsteemidele?</strong> — email, teavitused, integratsioonid?</li>
+        <li><strong>Mis on "done"?</strong> — millal on rakendus valmis, mida ei tehta?</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Finantsjuht -->
+  <section>
+    <div class="section-header">
+      <span class="icon">💰</span>
+      <h2>Finantsjuhi vaade</h2>
+      <span class="subtitle">CFO</span>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat">
+        <div class="value">~20€</div>
+        <div class="label">Kokku rahakulu (Claude API)</div>
+      </div>
+      <div class="stat">
+        <div class="value">~4h</div>
+        <div class="label">Sinu aeg arenduses</div>
+      </div>
+      <div class="stat">
+        <div class="value">~40%</div>
+        <div class="label">Kulu mis oleks ära hoitav</div>
+      </div>
+      <div class="stat">
+        <div class="value">0€</div>
+        <div class="label">Infrastruktuur (Vercel/Supabase)</div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Komponent</th>
+          <th>Hinnanguline kulu</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Claude API (~5 pikka sessiooni)</td>
+          <td>~15–25 €</td>
+        </tr>
+        <tr>
+          <td>Vercel (Hobby plaan)</td>
+          <td>0 €</td>
+        </tr>
+        <tr>
+          <td>Supabase (Free tier)</td>
+          <td>0 €</td>
+        </tr>
+        <tr>
+          <td>Resend (Free tier)</td>
+          <td>0 €</td>
+        </tr>
+        <tr>
+          <td>Arendaja aeg (sina)</td>
+          <td>~3–4h</td>
+        </tr>
+        <tr>
+          <td><strong>Kokku</strong></td>
+          <td><strong>~15–25 € + sinu aeg</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card">
+      <h3>Kus raha ja aeg kadus üleliigselt</h3>
+      <ul>
+        <li>localStorage → Supabase refaktoor (F3) oli puhas ümbertöötlus, nullväärtus</li>
+        <li>Hardcoded → dünaamilised ülesanded/liikmed (F5 osa) — sama asi</li>
+        <li>Env vars puudusid Vercelil (mitu deployd) — lihtne checklisti küsimus</li>
+      </ul>
+    </div>
+
+    <div class="highlight-box warning">
+      <strong>Finantsreegel tarkvaraprojektis:</strong><br/>
+      Arhitektuurimuutus maksab 10x rohkem kui see oleks maksnud alguses.
+      Andmete liikumine (localStorage → DB) on arhitektuurimuutus.
+    </div>
+  </section>
+
+  <!-- CEO -->
+  <section>
+    <div class="section-header">
+      <span class="icon">🏢</span>
+      <h2>Ettevõtte juhi vaade</h2>
+      <span class="subtitle">CEO</span>
+    </div>
+
+    <div class="highlight-box">
+      <strong>Suurim risk, mis realiseerus:</strong><br/>
+      Projekt tehti ilma tehnilise spetsifikatsioonita. See tähendab, et iga faas lisas tehnilist võlga
+      (technical debt) ja tõi kaasa ümbertegemist.
+    </div>
+
+    <p style="margin-bottom: 1rem; color: var(--muted);">Mida professionaalne projekt oleks teinud enne arendust:</p>
+
+    <div class="card">
+      <h3>1. Discovery (1h)</h3>
+      <ul class="checklist">
+        <li>Kes on kasutajad ja mis seadmed?</li>
+        <li>Mis on must-have vs nice-to-have?</li>
+        <li>Mis integratsioonid on vajalikud?</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>2. Tehniline arhitektuur (30 min)</h3>
+      <p style="margin-bottom: 0.75rem; color: var(--muted); font-size: 0.9rem;">Küsimused, millele vastata enne koodirida:</p>
+      <ul class="checklist">
+        <li><strong>Andmed:</strong> ainult lokaalne vs pilv? → Mitu seadet = pilv kohe</li>
+        <li><strong>Autentimine:</strong> kõigile avatud vs kasutajakontod?</li>
+        <li><strong>Teavitused:</strong> email/push — millise teenusega?</li>
+        <li><strong>Admin:</strong> kas sisu peab olema muudetav? → Kui jah, DB kohe</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>3. MVP definitsioon</h3>
+      <div class="highlight-box success">
+        "Minimaalne toode, mis lahendab põhiprobleemi" — mitte "kõige lihtsam versioon"
+      </div>
+    </div>
+  </section>
+
+  <!-- Ideaalne nõuete dokument -->
+  <section>
+    <div class="section-header">
+      <span class="icon">📋</span>
+      <h2>Ideaalne nõuete dokument</h2>
+      <span class="subtitle">Mida oleks pidanud kirjutama alguses</span>
+    </div>
+
+    <p style="margin-bottom: 1rem; color: var(--muted);">
+      Kui oleksid tulnud selle tekstiga, oleks kogu projekt olnud <strong>1 faas:</strong>
+    </p>
+
+    <div class="ideal-doc">"Tahan pererakendust, kus:
+- Saab logida koduülesandeid (nimi + minutid) — kasutatakse nii mobiilis kui arvutis
+- Ülesannete ja pereliikmete nimekiri peab olema muudetav
+- Iga ülesandel on sagedus (iga päev, nädalas jne) — Eesti aja järgi reset
+- Nädalane edetabel ja ajalugu
+- Automaatne email esmaspäeviti tulemustega"</div>
+
+    <p style="margin: 1rem 0 0.5rem; color: var(--muted); font-size: 0.9rem;">See üks lõik oleks andnud kohe:</p>
+    <div class="card">
+      <ul class="checklist">
+        <li>Supabase algusest (mitu seadet → pilv)</li>
+        <li>Dünaamilised ülesanded ja liikmed (muudetav → DB)</li>
+        <li>Eesti timezone (mainitud kohe)</li>
+        <li>Email + Resend (mainitud kohe → domain planeering kohe)</li>
+      </ul>
+    </div>
+
+    <div class="highlight-box success">
+      <strong>Tulemus:</strong> 1 faas, ~60% vähem aega, ~60% vähem Claude krediiti.
+    </div>
+  </section>
+
+  <!-- Kuldreegel -->
+  <div class="gold-rule">
+    <h2>Kuldreegel tulevikuks</h2>
+    <p class="rule-text">
+      Kirjelda rakendust kasutaja teekonnana, mitte funktsioonide nimekirjana.
+    </p>
+    <div class="example">
+      "Avan telefonis rakenduse → näen ülesandeid → vajutan → valin kes tegi → sisestan minutid →
+      näen edetabelit → esmaspäeval tuleb email"
+      <br/><br/>
+      See üks lause sisaldab kõike vajalikku arhitektuuriotsuste tegemiseks.
+    </div>
+  </div>
+
+  <footer>
+    Pererakenduse retrospektiiv · 2026 · Kirjutatud koos Claude'iga
+  </footer>
+
+</div>
+</body>
+</html>
