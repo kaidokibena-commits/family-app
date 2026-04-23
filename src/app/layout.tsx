@@ -8,8 +8,8 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Family Chore Tracker",
-  description: "Family chore earnings tracker",
+  title: "Perekonna Tegevused",
+  description: "Perekonna tegevuste ja teenimiste jälgija",
 };
 
 export default function RootLayout({
@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} h-full`}>
+    <html lang="et" className={`${geistSans.variable} h-full`}>
       <body className="h-full bg-[#0a0a0f] text-white antialiased">{children}</body>
     </html>
   );
