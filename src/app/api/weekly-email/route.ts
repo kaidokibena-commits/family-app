@@ -83,15 +83,19 @@ export async function GET(request: Request) {
   return NextResponse.json({ sent: results });
 }
 
+function getWeekStartForDate(date) {
+  const dow = new Intl.DateTimeFormat("en-US", { timeZone: "Europe/Tallinn", weekday: "short" }).format(date);
+  const db = { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6 };
+  const ds = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Tallinn" }).format(date);
+  const [y, m, d] = ds.split("-").map(Number);
+  const md = d - (db[dow] ?? 0);
+  const n = new Date(Date.UTC(y, m - 1, md, 12));
+  const th = +new Intl.DateTimeFormat("en-US", { timeZone: "Europe/Tallinn", hour: "2-digit", hour12: false }).format(n);
+  return new Date(Date.UTC(y, m - 1, md, 0, 0, 0) - (th - 12) * 3600000);
+}
 function getPreviousWeekRange(): { start: Date; end: Date } {
-  const now = new Date();
-  // This week's Sunday midnight UTC
-  const end = new Date(now);
-  end.setUTCHours(0, 0, 0, 0);
-  end.setUTCDate(end.getUTCDate() - end.getUTCDay());
-  // Previous week's Sunday midnight UTC
-  const start = new Date(end);
-  start.setUTCDate(start.getUTCDate() - 7);
+  const end = getWeekStartForDate(new Date());
+  const start = getWeekStartForDate(new Date(end.getTime() - 7 * 24 * 3600000));
   return { start, end };
 }
 

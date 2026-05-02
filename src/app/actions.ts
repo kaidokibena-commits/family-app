@@ -286,10 +286,14 @@ export async function toggleUnavailableDate(
 // ── Utilities ─────────────────────────────────────────────────────────────────
 
 function getWeekStartUTC(): Date {
+  // Week starts Monday 00:00 Europe/Tallinn
   const now = new Date();
-  now.setUTCHours(0, 0, 0, 0);
-  now.setUTCDate(now.getUTCDate() - now.getUTCDay());
-  return now;
+  const weekKey = getWeekKey(now);
+  const [y, m, d] = weekKey.split("-").map(Number);
+  const noonUTC = new Date(Date.UTC(y, m - 1, d, 12));
+  const tallinHour = +new Intl.DateTimeFormat("en-US", { timeZone: "Europe/Tallinn", hour: "2-digit", hour12: false }).format(noonUTC);
+  const offsetMs = (tallinHour - 12) * 3600000;
+  return new Date(Date.UTC(y, m - 1, d, 0, 0, 0) - offsetMs);
 }
 
 function formatWeekLabel(weekStart: string): string {
