@@ -83,7 +83,7 @@ export async function GET(request: Request) {
   return NextResponse.json({ sent: results });
 }
 
-function getWeekStartForDate(date) {
+function getWeekStartForDate(date: Date): Date {
   const dow = new Intl.DateTimeFormat("en-US", { timeZone: "Europe/Tallinn", weekday: "short" }).format(date);
   const db = { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6 };
   const ds = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Tallinn" }).format(date);
