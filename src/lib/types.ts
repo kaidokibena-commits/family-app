@@ -78,7 +78,7 @@ export function getMemberColor(index: number) {
 export function getWeekKey(date: Date = new Date()): string {
   // Week starts Monday 00:00 Europe/Tallinn
   const dow = new Intl.DateTimeFormat("en-US", { timeZone: "Europe/Tallinn", weekday: "short" }).format(date);
-  const daysBack = { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6 };
+  const daysBack: Record<string, number> = { Mon: 0, Tue: 1, Wed: 2, Thu: 3, Fri: 4, Sat: 5, Sun: 6 };
   const dateStr = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Tallinn" }).format(date);
   const [y, m, d] = dateStr.split("-").map(Number);
   return new Date(Date.UTC(y, m - 1, d - (daysBack[dow] ?? 0))).toISOString().split("T")[0];
