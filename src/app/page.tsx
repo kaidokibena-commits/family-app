@@ -13,6 +13,7 @@ import SettingsModal from "@/components/SettingsModal";
 import HistoricalStats from "@/components/HistoricalStats";
 import Calendar from "@/components/Calendar";
 import { signOut } from "@/app/auth-actions";
+import Link from "next/link";
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -77,6 +78,13 @@ export default function Dashboard() {
             Perekonna Tegevused
           </h1>
           <div className="flex-1 h-px bg-gray-800 hidden md:block" />
+          <Link
+            href="/tegevused"
+            className="text-gray-500 hover:text-white text-xs font-medium transition-colors px-2 py-1 rounded-lg hover:bg-gray-800"
+            title="Tegevused"
+          >
+            🎈 Tegevused
+          </Link>
           <button
             onClick={() => setShowCalendar(true)}
             className="text-gray-500 hover:text-white text-xl transition-colors"
