@@ -41,7 +41,7 @@ export default function PriorityPage() {
   const [submitting, setSubmitting] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [completing, setCompleting] = useState<string | null>(null);
-  const [listening, setListening] = useState(false);
+  const [listening, setListening] = useState<"activity" | "why" | null>(null);
   const [micError, setMicError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [hasSpeech, setHasSpeech] = useState(false);
@@ -70,7 +70,7 @@ export default function PriorityPage() {
     loadData();
   }, [loadData]);
 
-  function startListening() {
+  function startListening(field: "activity" | "why") {
     const SR =
       (window as any).SpeechRecognition ||
       (window as any).webkitSpeechRecognition;
@@ -85,11 +85,11 @@ export default function PriorityPage() {
     rec.interimResults = false;
     rec.onresult = (e: any) => {
       const transcript = e.results[0][0].transcript;
-      setForm((f) => ({ ...f, activity: transcript }));
-      setListening(false);
+      setForm((f) => ({ ...f, [field]: transcript }));
+      setListening(null);
     };
     rec.onerror = (e: any) => {
-      setListening(false);
+      setListening(null);
       if (e.error === "not-allowed") {
         setMicError("Microphone permission denied. Please allow access in your browser settings.");
       } else if (e.error === "no-speech") {
@@ -98,10 +98,10 @@ export default function PriorityPage() {
         setMicError("Mic error: " + e.error);
       }
     };
-    rec.onend = () => setListening(false);
+    rec.onend = () => setListening(null);
     try {
       rec.start();
-      setListening(true);
+      setListening(field);
     } catch {
       setMicError("Could not start microphone.");
     }
@@ -218,19 +218,19 @@ export default function PriorityPage() {
                 {hasSpeech && (
                   <button
                     type="button"
-                    onClick={startListening}
+                    onClick={() => startListening("activity")}
                     title="Speak task name"
                     className={`px-3 rounded-xl border transition-all ${
-                      listening
+                      listening === "activity"
                         ? "bg-red-600 border-red-500 animate-pulse"
                         : "bg-gray-800 border-gray-700 hover:border-amber-500"
                     }`}
                   >
-                    {listening ? "🔴" : "🎤"}
+                    {listening === "activity" ? "🔴" : "🎤"}
                   </button>
                 )}
               </div>
-              {listening && (
+              {listening === "activity" && (
                 <p className="text-xs text-red-400 mt-1">Listening — speak now…</p>
               )}
               {micError && (
@@ -274,15 +274,34 @@ export default function PriorityPage() {
             {/* Why */}
             <div>
               <label className="text-xs text-gray-400 mb-1 block">Why *</label>
-              <input
-                type="text"
-                value={form.why}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, why: e.target.value }))
-                }
-                placeholder="Brief reason…"
-                className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-white placeholder-gray-600 focus:outline-none focus:border-amber-500 text-sm"
-              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={form.why}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, why: e.target.value }))
+                  }
+                  placeholder="Brief reason…"
+                  className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-white placeholder-gray-600 focus:outline-none focus:border-amber-500 text-sm"
+                />
+                {hasSpeech && (
+                  <button
+                    type="button"
+                    onClick={() => startListening("why")}
+                    title="Speak reason"
+                    className={`px-3 rounded-xl border transition-all ${
+                      listening === "why"
+                        ? "bg-red-600 border-red-500 animate-pulse"
+                        : "bg-gray-800 border-gray-700 hover:border-amber-500"
+                    }`}
+                  >
+                    {listening === "why" ? "🔴" : "🎤"}
+                  </button>
+                )}
+              </div>
+              {listening === "why" && (
+                <p className="text-xs text-red-400 mt-1">Listening — speak now…</p>
+              )}
             </div>
 
             {/* Deadline */}
