@@ -85,6 +85,13 @@ export default function Dashboard() {
           >
             🎈 Tegevused
           </Link>
+          <Link
+            href="/prioriteet"
+            className="text-gray-500 hover:text-white text-xs font-medium transition-colors px-2 py-1 rounded-lg hover:bg-gray-800"
+            title="Priority Tasks"
+          >
+            ⚡ Priority
+          </Link>
           <button
             onClick={() => setShowCalendar(true)}
             className="text-gray-500 hover:text-white text-xl transition-colors"
