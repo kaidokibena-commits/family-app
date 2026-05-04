@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perekonna ülesannete rakendus — Projektileht</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8f9fc;
+      color: #1a1a2e;
+      padding: 48px 24px;
+    }
+
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #6d28d9, #4f46e5);
+      padding: 56px 56px 48px;
+      color: white;
+    }
+    .header-tag {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.9);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      font-size: 36px;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .header p {
+      font-size: 16px;
+      opacity: 0.8;
+      line-height: 1.6;
+      max-width: 540px;
+    }
+    .header-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      margin-top: 32px;
+      padding-top: 32px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+    .header-meta-item {
+      font-size: 13px;
+    }
+    .header-meta-item span {
+      display: block;
+      opacity: 0.6;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    /* Body */
+    .body { padding: 48px 56px; }
+
+    /* Tech stack */
+    .tech-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 48px;
+    }
+    .tech-badge {
+      background: #f0edff;
+      color: #6d28d9;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 100px;
+    }
+
+    /* Section */
+    .section { margin-bottom: 48px; }
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #6d28d9;
+      margin-bottom: 20px;
+    }
+
+    /* Phase cards */
+    .phase {
+      border: 1px solid #e8e8f0;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .phase-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px 24px;
+      background: #fafafa;
+      border-bottom: 1px solid #e8e8f0;
+    }
+    .phase-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .phase-1 .phase-number { background: #e0f2fe; color: #0369a1; }
+    .phase-2 .phase-number { background: #f0fdf4; color: #166534; }
+    .phase-3 .phase-number { background: #fef9c3; color: #854d0e; }
+    .phase-4 .phase-number { background: #fdf2f8; color: #86198f; }
+
+    .phase-title { font-size: 16px; font-weight: 700; }
+    .phase-subtitle { font-size: 13px; color: #888; margin-top: 2px; }
+
+    .phase-body { padding: 20px 24px; }
+    .phase-items {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .phase-items li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #374151;
+    }
+    .phase-items li::before {
+      content: '✓';
+      font-size: 12px;
+      font-weight: 700;
+      color: #6d28d9;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    /* Problems table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th {
+      text-align: left;
+      padding: 10px 16px;
+      background: #f5f3ff;
+      color: #6d28d9;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    th:first-child { border-radius: 8px 0 0 8px; }
+    th:last-child { border-radius: 0 8px 8px 0; }
+    td {
+      padding: 14px 16px;
+      vertical-align: top;
+      border-bottom: 1px solid #f0f0f5;
+      line-height: 1.5;
+      color: #374151;
+    }
+    tr:last-child td { border-bottom: none; }
+    td:first-child { font-weight: 500; color: #1a1a2e; }
+
+    .problem-tag {
+      display: inline-block;
+      background: #fef2f2;
+      color: #dc2626;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+    .solution-tag {
+      display: inline-block;
+      background: #f0fdf4;
+      color: #16a34a;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+
+    /* Cost box */
+    .cost-box {
+      background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+      border: 1px solid #ddd6fe;
+      border-radius: 14px;
+      padding: 24px 28px;
+    }
+    .cost-box p {
+      font-size: 14px;
+      color: #5b21b6;
+      line-height: 1.7;
+    }
+    .cost-box a {
+      color: #6d28d9;
+      font-weight: 600;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 24px 56px;
+      background: #fafafa;
+      border-top: 1px solid #e8e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer p { font-size: 13px; color: #9ca3af; }
+    .footer a { color: #6d28d9; font-weight: 600; text-decoration: none; font-size: 13px; }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .page { box-shadow: none; border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-tag">Projektileht</div>
+    <h1>Perekonna ülesannete rakendus</h1>
+    <p>
+      Veebirakendus perekondlike koduülesannete jälgimiseks. Igal perekonnaliikmel on võimalik logida tehtud ülesandeid, teenida preemiat ja saada nädalane kokkuvõte emailile.
+    </p>
+    <div class="header-meta">
+      <div class="header-meta-item">
+        <span>Kuupäev</span>
+        Aprill 2026
+      </div>
+      <div class="header-meta-item">
+        <span>Versioon</span>
+        Faas 4 (viimane)
+      </div>
+      <div class="header-meta-item">
+        <span>Rakendus</span>
+        family-app-tau-five.vercel.app
+      </div>
+      <div class="header-meta-item">
+        <span>Arendaja</span>
+        Kaido + Claude (AI)
+      </div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="body">
+
+    <!-- Tech stack -->
+    <div class="section">
+      <div class="section-title">Tehnoloogiad</div>
+      <div class="tech-row">
+        <span class="tech-badge">Next.js 16.2</span>
+        <span class="tech-badge">React 19</span>
+        <span class="tech-badge">TypeScript</span>
+        <span class="tech-badge">Tailwind CSS v4</span>
+        <span class="tech-badge">Supabase</span>
+        <span class="tech-badge">Vercel</span>
+        <span class="tech-badge">Resend</span>
+        <span class="tech-badge">Vercel Cron Jobs</span>
+      </div>
+    </div>
+
+    <!-- Phases -->
+    <div class="section">
+      <div class="section-title">Arendusfaasid</div>
+
+      <div class="phase phase-1">
+        <div class="phase-header">
+          <div class="phase-number">1</div>
+          <div>
+            <div class="phase-title">Algne rakendus</div>
+            <div class="phase-subtitle">Põhifunktsionaalsus</div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <ul class="phase-items">
+            <li>6 ülesannet inglise keeles (Clean Room, Walk Dog jt)</li>
+            <li>Pereliikmed: Dad, Child 1, Child 2</li>
+            <li>Ülesande logimine nimede ja minutitega</li>
+            <li>Preemia arvutus: $1 per 15 minutit</li>
+            <li>Nädala edetabel (leaderboard)</li>
+            <li>Andmete salvestamine localStorage'i + Supabase kirjutamine</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase phase-2">
+        <div class="phase-header">
+          <div class="phase-number">2</div>
+          <div>
+            <div class="phase-title">Täiustused</div>
+            <div class="phase-subtitle">Eestikeelne, sageduspõhine, mobiilisõbralik</div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <ul class="phase-items">
+            <li>7 ülesannet eesti keeles tähestikulises järjekorras</li>
+            <li>Igal ülesandel visuaalne ikoon (🧸 🏠 ❄️ 🧺 🍳 🪜 🌀)</li>
+            <li>Sagedussüsteem: Alati / Iga päev / Kord nädalas (laupäevast)</li>
+            <li>Ülesanded kaovad pärast täitmist ja ilmuvad uuesti Eesti aja järgi kell 00:00</li>
+            <li>Iga ülesanne eraldi real (mitte grid)</li>
+            <li>Responsiivne disain — telefon, tahvelarvuti, arvuti</li>
+            <li>Kerimine (scroll) parandatud</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase phase-3">
+        <div class="phase-header">
+          <div class="phase-number">3</div>
+          <div>
+            <div class="phase-title">Seadmeteülene sünkroniseerimine</div>
+            <div class="phase-subtitle">Supabase kui peamine andmeallikas</div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <ul class="phase-items">
+            <li>Kõik andmed loetakse Supabase'ist (mitte localStorage'ist)</li>
+            <li>Mobiilis tehtud ülesanded nähtavad kohe arvutis ja vastupidi</li>
+            <li>Loodud <code>logs</code> tabel Supabase'is koos RLS poliitikatega</li>
+            <li>Supabase keskkonnamuutujad lisatud Vercelisse</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase phase-4">
+        <div class="phase-header">
+          <div class="phase-number">4</div>
+          <div>
+            <div class="phase-title">Nädalane emailikokkuvõte</div>
+            <div class="phase-subtitle">Automaatne email iga esmaspäev</div>
+          </div>
+        </div>
+        <div class="phase-body">
+          <ul class="phase-items">
+            <li>⚙️ Emaili seadete vaade rakenduses igale pereliikmele</li>
+            <li>Emailid salvestatakse Supabase <code>member_emails</code> tabelisse</li>
+            <li>Resend teenuse integreerimine emaili saatmiseks</li>
+            <li>Vercel Cron Job käivitub iga esmaspäev kell 00:00 Eesti ajas</li>
+            <li>Email sisaldab: teenitud summa, töötatud minutid, ülesannete nimekiri</li>
+            <li>Ilusalt kujundatud HTML email (tume teema)</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Problems & Solutions -->
+    <div class="section">
+      <div class="section-title">Probleemid ja lahendused</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:35%">Probleem</th>
+            <th>Lahendus &amp; õppetund</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="problem-tag">Faas 3</div><br>
+              Mobiilis tehtud ülesanded ei ilmunud arvutis
+            </td>
+            <td>
+              <div class="solution-tag">Lahendus</div><br>
+              localStorage on brauseripõhine — andmed ei liigu seadmete vahel. Lahendus: kõik lugemine viia Supabase'i. <strong>Õppetund:</strong> kui rakendust kasutatakse mitmes seadmes, ei tohi kasutada localStorage'i andmete salvestamiseks.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="problem-tag">Faas 3</div><br>
+              Rakendus jäi igaveseks "Laen..." seisu pärast Supabase'ile üleminekut
+            </td>
+            <td>
+              <div class="solution-tag">Lahendus</div><br>
+              Vercel ei loe <code>.env.local</code> faili — keskkonnamuutujad tuleb käsitsi Vercelisse lisada (<code>vercel env add</code>). <strong>Õppetund:</strong> pärast igat muudatust keskkonnmuutujates tuleb uuesti deployda.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="problem-tag">Faas 3 &amp; 4</div><br>
+              Supabase tabel ei olnud API kaudu leitav ("schema cache" viga)
+            </td>
+            <td>
+              <div class="solution-tag">Lahendus</div><br>
+              Pärast uue tabeli loomist peab Supabase PostgREST cache'i uuendama. Käsk: <code>NOTIFY pgrst, 'reload schema';</code> SQL editoris. <strong>Õppetund:</strong> uus tabel ei ole kohe API kaudu saadaval.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="problem-tag">Faas 4</div><br>
+              Resend ei saatnud emaile — "can only send to your own email"
+            </td>
+            <td>
+              <div class="solution-tag">Lahendus</div><br>
+              Resend'i tasuta plaan ilma verifitseeritud domeenita lubab saata ainult konto omaniku emailile. <strong>Õppetund:</strong> emailide saatmiseks erinevatele aadressidele on vajalik oma domeen verifitseerida Resend'is.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="problem-tag">Faas 4</div><br>
+              Gmail aadress punktiga vs ilma (kaido.kibena vs kaidokibena)
+            </td>
+            <td>
+              <div class="solution-tag">Lahendus</div><br>
+              Gmail ignoreerib punkte aadressis, kuid Resend teeb string-võrdluse. Tulemuseks: <code>kaido.kibena@gmail.com</code> ≠ <code>kaidokibena@gmail.com</code> Resend'i jaoks. <strong>Õppetund:</strong> kasuta täpselt sama emaili, millega Resend'i konto on loodud.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="problem-tag">Faas 2</div><br>
+              Ülesannete reset ei toimunud täpselt Eesti aja järgi
+            </td>
+            <td>
+              <div class="solution-tag">Lahendus</div><br>
+              Server töötab UTC ajatsoonis, kasutaja on EEST (UTC+3). Lahendus: <code>Intl.DateTimeFormat</code> koos <code>timeZone: "Europe/Tallinn"</code> — ei tohi eeldada, et serveri aeg = kasutaja aeg.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Cost -->
+    <div class="section">
+      <div class="section-title">Projekti kulud</div>
+      <div class="cost-box">
+        <p>
+          <strong>Claude AI (arendus):</strong> Täpset krediidikulu näed oma
+          <a href="https://claude.ai" target="_blank">claude.ai</a> konto all
+          → <em>Settings → Billing &amp; Usage</em>. See projekt sisaldas mitut pikka sessiooni koos koodimuudatuste, vigade paranduste ja deploymentidega.<br><br>
+
+          <strong>Vercel:</strong> Tasuta (Hobby plaan) — sobib selle suurusega projektile.<br><br>
+
+          <strong>Supabase:</strong> Tasuta (Free tier) — kuni 500 MB andmeid, 50 000 kuupäringut.<br><br>
+
+          <strong>Resend:</strong> Tasuta (3 000 emaili/kuus) — piisab pere emailide jaoks.<br><br>
+
+          <strong>Domeen (tulevikus):</strong> ~10–15 €/aastas, vajalik kui soovid emaile saata erinevatele aadressidele ilma Resend'i piiranguteta.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>Perekonna ülesannete rakendus · Aprill 2026</p>
+    <a href="https://family-app-tau-five.vercel.app" target="_blank">→ Ava rakendus</a>
+  </div>
+
+</div>
+</body>
+</html>
