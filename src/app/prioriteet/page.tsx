@@ -41,7 +41,7 @@ export default function PriorityPage() {
   const [submitting, setSubmitting] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [completing, setCompleting] = useState<string | null>(null);
-  const [listening, setListening] = useState<"activity" | "why" | null>(null);
+  const [listening, setListening] = useState<"activity" | "why" | "duration" | "cost" | "deadline" | null>(null);
   const [micError, setMicError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [hasSpeech, setHasSpeech] = useState(false);
@@ -70,7 +70,7 @@ export default function PriorityPage() {
     loadData();
   }, [loadData]);
 
-  function startListening(field: "activity" | "why") {
+  function startListening(field: "activity" | "why" | "duration" | "cost" | "deadline") {
     const SR =
       (window as any).SpeechRecognition ||
       (window as any).webkitSpeechRecognition;
@@ -84,8 +84,21 @@ export default function PriorityPage() {
     rec.continuous = false;
     rec.interimResults = false;
     rec.onresult = (e: any) => {
-      const transcript = e.results[0][0].transcript;
-      setForm((f) => ({ ...f, [field]: transcript }));
+      const transcript = e.results[0][0].transcript.trim();
+      if (field === "duration" || field === "cost") {
+        const num = parseFloat(transcript.replace(/[^0-9.]/g, ""));
+        if (!isNaN(num)) setForm((f) => ({ ...f, [field]: num }));
+        else setMicError(`Could not read "${transcript}" as a number. Try again.`);
+      } else if (field === "deadline") {
+        const d = new Date(transcript);
+        if (!isNaN(d.getTime())) {
+          setForm((f) => ({ ...f, deadline: d.toISOString().split("T")[0] }));
+        } else {
+          setMicError(`Could not parse date. Try saying "May 10" or "June 1 2026".`);
+        }
+      } else {
+        setForm((f) => ({ ...f, [field]: transcript }));
+      }
       setListening(null);
     };
     rec.onerror = (e: any) => {
@@ -244,32 +257,67 @@ export default function PriorityPage() {
                 <label className="text-xs text-gray-400 mb-1 block">
                   Duration (min) *
                 </label>
-                <input
-                  type="number"
-                  min={1}
-                  value={form.duration}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, duration: +e.target.value }))
-                  }
-                  className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 text-sm"
-                />
+                <div className="flex gap-1">
+                  <input
+                    type="number"
+                    min={1}
+                    value={form.duration}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, duration: +e.target.value }))
+                    }
+                    className="flex-1 min-w-0 bg-gray-800 border border-gray-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-amber-500 text-sm"
+                  />
+                  {hasSpeech && (
+                    <button
+                      type="button"
+                      onClick={() => startListening("duration")}
+                      title="Speak duration in minutes"
+                      className={`px-2 rounded-xl border transition-all ${
+                        listening === "duration"
+                          ? "bg-red-600 border-red-500 animate-pulse"
+                          : "bg-gray-800 border-gray-700 hover:border-amber-500"
+                      }`}
+                    >
+                      {listening === "duration" ? "🔴" : "🎤"}
+                    </button>
+                  )}
+                </div>
               </div>
               <div>
                 <label className="text-xs text-gray-400 mb-1 block">
                   Cost (€)
                 </label>
-                <input
-                  type="number"
-                  min={0}
-                  step={0.01}
-                  value={form.cost}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, cost: +e.target.value }))
-                  }
-                  className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 text-sm"
-                />
+                <div className="flex gap-1">
+                  <input
+                    type="number"
+                    min={0}
+                    step={0.01}
+                    value={form.cost}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, cost: +e.target.value }))
+                    }
+                    className="flex-1 min-w-0 bg-gray-800 border border-gray-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-amber-500 text-sm"
+                  />
+                  {hasSpeech && (
+                    <button
+                      type="button"
+                      onClick={() => startListening("cost")}
+                      title="Speak cost amount"
+                      className={`px-2 rounded-xl border transition-all ${
+                        listening === "cost"
+                          ? "bg-red-600 border-red-500 animate-pulse"
+                          : "bg-gray-800 border-gray-700 hover:border-amber-500"
+                      }`}
+                    >
+                      {listening === "cost" ? "🔴" : "🎤"}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
+            {(listening === "duration" || listening === "cost") && (
+              <p className="text-xs text-red-400 -mt-2">Listening — speak a number…</p>
+            )}
 
             {/* Why */}
             <div>
@@ -309,14 +357,33 @@ export default function PriorityPage() {
               <label className="text-xs text-gray-400 mb-1 block">
                 Deadline (optional)
               </label>
-              <input
-                type="date"
-                value={form.deadline}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, deadline: e.target.value }))
-                }
-                className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 text-sm"
-              />
+              <div className="flex gap-2">
+                <input
+                  type="date"
+                  value={form.deadline}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, deadline: e.target.value }))
+                  }
+                  className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-amber-500 text-sm"
+                />
+                {hasSpeech && (
+                  <button
+                    type="button"
+                    onClick={() => startListening("deadline")}
+                    title="Speak deadline date"
+                    className={`px-3 rounded-xl border transition-all ${
+                      listening === "deadline"
+                        ? "bg-red-600 border-red-500 animate-pulse"
+                        : "bg-gray-800 border-gray-700 hover:border-amber-500"
+                    }`}
+                  >
+                    {listening === "deadline" ? "🔴" : "🎤"}
+                  </button>
+                )}
+              </div>
+              {listening === "deadline" && (
+                <p className="text-xs text-red-400 mt-1">Listening — say a date e.g. "May 10"…</p>
+              )}
             </div>
 
             {/* Benefit type */}
