@@ -42,6 +42,8 @@ export default function PriorityPage() {
   const [fetching, setFetching] = useState(false);
   const [completing, setCompleting] = useState<string | null>(null);
   const [listening, setListening] = useState(false);
+  const [micError, setMicError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
   const [hasSpeech, setHasSpeech] = useState(false);
 
   useEffect(() => {
@@ -72,23 +74,45 @@ export default function PriorityPage() {
     const SR =
       (window as any).SpeechRecognition ||
       (window as any).webkitSpeechRecognition;
-    if (!SR) return;
+    if (!SR) {
+      setMicError("Speech recognition not supported in this browser.");
+      return;
+    }
+    setMicError(null);
     const rec = new SR();
     rec.lang = "en-US";
     rec.continuous = false;
     rec.interimResults = false;
     rec.onresult = (e: any) => {
-      setForm((f) => ({ ...f, activity: e.results[0][0].transcript }));
+      const transcript = e.results[0][0].transcript;
+      setForm((f) => ({ ...f, activity: transcript }));
       setListening(false);
     };
-    rec.onerror = () => setListening(false);
+    rec.onerror = (e: any) => {
+      setListening(false);
+      if (e.error === "not-allowed") {
+        setMicError("Microphone permission denied. Please allow access in your browser settings.");
+      } else if (e.error === "no-speech") {
+        setMicError("No speech detected. Try again.");
+      } else {
+        setMicError("Mic error: " + e.error);
+      }
+    };
     rec.onend = () => setListening(false);
-    rec.start();
-    setListening(true);
+    try {
+      rec.start();
+      setListening(true);
+    } catch {
+      setMicError("Could not start microphone.");
+    }
   }
 
   async function handleAdd() {
-    if (!form.activity.trim() || !form.why.trim()) return;
+    if (!form.activity.trim() || !form.why.trim()) {
+      setFormError("Activity and Why are required.");
+      return;
+    }
+    setFormError(null);
     setSubmitting(true);
     await createPriorityTask({
       activity: form.activity.trim(),
@@ -202,10 +226,16 @@ export default function PriorityPage() {
                         : "bg-gray-800 border-gray-700 hover:border-amber-500"
                     }`}
                   >
-                    🎤
+                    {listening ? "🔴" : "🎤"}
                   </button>
                 )}
               </div>
+              {listening && (
+                <p className="text-xs text-red-400 mt-1">Listening — speak now…</p>
+              )}
+              {micError && (
+                <p className="text-xs text-red-400 mt-1">{micError}</p>
+              )}
             </div>
 
             {/* Duration + Cost */}
@@ -324,6 +354,9 @@ export default function PriorityPage() {
             </div>
 
             {/* Form actions */}
+            {formError && (
+              <p className="text-xs text-red-400 -mb-1">{formError}</p>
+            )}
             <div className="flex gap-2 pt-1">
               <button
                 onClick={() => {
