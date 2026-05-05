@@ -64,6 +64,20 @@ export async function createPriorityTask(
   else await invalidateCache();
 }
 
+
+export async function updatePriorityTask(
+  id: string,
+  task: Omit<PriorityTask, "id" | "created_at" | "completed_at" | "completion_summary">
+): Promise<void> {
+  const db = await createServerSupabase();
+  const { error } = await db
+    .from("priority_tasks")
+    .update(task)
+    .eq("id", id);
+  if (error) console.error("updatePriorityTask:", error.message);
+  else await invalidateCache();
+}
+
 export async function deletePriorityTask(id: string): Promise<void> {
   const db = await createServerSupabase();
   await db.from("priority_tasks").delete().eq("id", id);
